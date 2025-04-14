@@ -1,0 +1,51 @@
+import pygame
+import random
+
+class Player:
+    def __init__(self):
+        self.rect = pygame.Rect(300, 400, 100, 20)
+        self.lives = 3
+
+    def move(self, direction):
+        if direction == "left":
+            self.rect.x -= 5
+        elif direction == "right":
+            self.rect.x += 5
+    def draw(self, screen):
+        pygame.draw.rect(screen, (0, 255, 0), self.rect)
+
+
+class Item:
+    def __init__(self, color, x, y):
+        self.color = color
+        self.rect = pygame.Rect(x, y, 20, 20)
+
+    def fall(self):
+        self.rect.y += 5
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
+
+
+ class GameManager:
+    def __init__(self):
+        self.score = 0
+        self.is_running = True
+        self.items = []
+
+    def spawn_item(self):
+        colors = [(255, 0, 0), (0, 0, 255), (255, 255, 0)]
+        color = random.choice(colors)
+        x = random.randint(0, 600)
+        self.items.append(Item(color, x, 0))
+
+    def check_collisions(self, player):
+        for item in self.items[:]:
+            if item.rect.colliderect(player.rect):
+                if item.color in [(255, 0, 0), (0, 0, 255), (255, 255, 0)]:
+                    self.score += 10
+                else:
+                    player.lives -= 1
+                self.items.remove(item)
+
+       
+
