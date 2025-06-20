@@ -60,7 +60,7 @@ class Basket:
         pygame.draw.rect(screen, self.color, self.rect, border_radius=10)
 
 class Ball:
-    """Класс шарика, за которые можно получить очки"""
+    """Класс полезного шарика"""
     def __init__(self):
         self.x = random.randint(BALL_R, WIDTH - BALL_R)
         self.y = -BALL_R
@@ -88,7 +88,7 @@ class Ball:
         pygame.draw.circle(screen, self.color, (self.x, self.y), int(self.r))
 
 class Rock:
-    """Класс камня"""
+    """Класс препятствия (камня)"""
     def __init__(self):
         self.x = random.randint(ROCK_R, WIDTH - ROCK_R)
         self.y = -ROCK_R
