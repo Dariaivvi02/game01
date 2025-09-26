@@ -1,4 +1,4 @@
-"""основной цикл и создание экземпляров GameModel и GameView"""
+"""Основной цикл и создание экземпляров GameModel и GameView"""
 import pygame
 import asyncio
 import platform
@@ -24,6 +24,7 @@ async def main_loop():
     model, view, screen = setup_game()
     clock = pygame.time.Clock()
     running = True
+    last_direction = None
     
     while running:
         # Обработка событий
@@ -31,7 +32,23 @@ async def main_loop():
             if event.type == pygame.QUIT:
                 model.save_high_score()
                 running = False
+            
+            # Обработка клавиатуры
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p and model.state == PLAYING:
+                    model.paused = not model.paused
+                elif event.key == pygame.K_LEFT:
+                    last_direction = "left"
+                elif event.key == pygame.K_RIGHT:
+                    last_direction = "right"
+            
+            # Сброс направления при отпускании клавиш
+            if event.type == pygame.KEYUP:
+                if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
+                    last_direction = None
               
+        # Обновление модели игры
+        model.update(last_direction)
         
         # Обработка состояния меню
         if model.state == MENU:
@@ -61,16 +78,13 @@ async def main_loop():
         
         # Обработка игрового процесса
         elif model.state == PLAYING:
-            # Обработка движение корзины
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT]:
-                model.basket.move("left")
-            if keys[pygame.K_RIGHT]:
-                model.basket.move("right")
-            
             # Отрисовка игры
             view.draw_game(model.basket, model.balls, model.rocks, model.score, model.lives)
             
+            # Отрисовка паузы
+            if model.paused:
+                view.draw_pause()
+        
         # Обновление экрана
         pygame.display.flip()
         clock.tick(FPS)
