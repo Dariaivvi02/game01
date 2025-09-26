@@ -16,6 +16,7 @@ class GameModel:
         self.spawn_counter = 0
         self.high_score = self.get_high_score()
         self.paused = False
+        self.game_over = False
 
     def get_high_score(self):
         """Получает рекорд из файла"""
@@ -39,13 +40,20 @@ class GameModel:
         else:
             self.rocks.append(Rock())
 
-    def update(self):
+    def update(self, direction=None):
         """Обновляет состояние игры"""
+        if self.state != PLAYING or self.paused:
+            return None
+            
+        # Обработка движения корзины
+        if direction:
+            self.basket.move(direction)
+            
         # Создаем новые объекты
         self.spawn_counter += 1
         if self.spawn_counter % SPAWN_TIMER == 0:
             self.spawn_object()
-            self.spawn_counter = 0  # Сбрасываем счетчик
+            self.spawn_counter = 0
 
         # Обновляем позиции объектов
         for ball in self.balls:
@@ -54,7 +62,7 @@ class GameModel:
             rock.move()
 
         # Проверяем столкновения
-        self.check_collisions()
+        return self.check_collisions()
 
     def check_collisions(self):
         """Проверяет столкновения объектов"""
@@ -63,24 +71,33 @@ class GameModel:
             if self.basket.rect.colliderect(ball.rect):
                 self.score += 10
                 self.balls.remove(ball)
+                return "catch"
             elif ball.y > HEIGHT:
                 self.balls.remove(ball)
                 self.lives -= 1
+                if self.lives <= 0:
+                    self.game_over = True
+                return "life_lost"
 
         # Обработка камней
         for rock in self.rocks[:]:
             if self.basket.rect.colliderect(rock.rect):
                 self.rocks.remove(rock)
                 self.lives -= 1
+                if self.lives <= 0:
+                    self.game_over = True
+                return "rock_hit"
             elif rock.y > HEIGHT:
                 self.rocks.remove(rock)
 
         # Проверка окончания игры
-        if self.lives <= 0:
+        if self.game_over:
             if self.score > self.high_score:
                 self.high_score = self.score
                 self.save_high_score()
             self.state = GAME_OVER
+            
+        return None
 
     def reset_game(self):
         """Сбрасывает состояние для новой игры"""
@@ -91,4 +108,5 @@ class GameModel:
         self.lives = 3
         self.spawn_counter = 0
         self.paused = False
+        self.game_over = False
         self.state = PLAYING
