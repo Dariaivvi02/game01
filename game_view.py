@@ -97,11 +97,4 @@ class GameView:
             ball.draw(self.screen)
         for rock in rocks:
             rock.draw(self.screen)
-    def draw_pause(self):
-    """Отрисовка экрана паузы"""
-    pause_text = self.font.render("Paused", True, YELLOW)
-    self.screen.blit(pause_text, (WIDTH//2 - pause_text.get_width()//2, HEIGHT//2))
-            
-        # Рисуем HUD
-        self.draw_hud(score, lives)
-    
+
