@@ -46,6 +46,7 @@ class Basket:
         self.speed = 7
         self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
         self.color = WHITE
+        #не имеет прямого доступа к внутреннему состоянию
 
     def move(self, dir):
         """Движение корзины влево/вправо"""
