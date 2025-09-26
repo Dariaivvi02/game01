@@ -1,3 +1,4 @@
+"""Классы игровых объектов"""
 import pygame
 import random
 from constants import *
@@ -9,11 +10,12 @@ class Basket:
         self.h = BASKET_H
         self.x = WIDTH // 2 - self.w // 2
         self.y = HEIGHT - 50
-        self.speed = BASKET_SPEED
+        self.speed = 7
         self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
+        self.color = WHITE
 
     def move(self, direction):
-        """Перемещает корзину в заданном направлении"""
+        """Движение корзины влево/вправо"""
         if direction == "left" and self.x > 0:
             self.x -= self.speed
         elif direction == "right" and self.x < WIDTH - self.w:
@@ -21,45 +23,61 @@ class Basket:
         self.rect.topleft = (self.x, self.y)
 
     def draw(self, screen):
-        """Отрисовывает корзину на экране"""
-        pygame.draw.rect(screen, WHITE, self.rect, border_radius=10)
+        """Отрисовка корзины"""
+        pygame.draw.rect(screen, self.color, self.rect, border_radius=10)
 
-
-class FallingObject:
-    """Базовый класс для падающих объектов"""
-    def __init__(self, radius, speed, color):
-        self.x = random.randint(radius, WIDTH - radius)
-        self.y = -radius
-        self.radius = radius
-        self.speed = speed
-        self.color = color
-        self.rect = pygame.Rect(self.x - radius, self.y - radius, radius * 2, radius * 2)
-
-    def move(self):
-        """Перемещает объект вниз по экрану"""
-        self.y += self.speed
-        self.rect.center = (self.x, self.y)
-
-    def draw(self, screen):
-        """Отрисовывает объект на экране (должен быть реализован в подклассах)"""
-        pass
-
-
-class Ball(FallingObject):
+class Ball:
     """Класс полезного шарика"""
     def __init__(self):
-        super().__init__(BALL_R, BALL_SPEED, random.choice(BALL_COLORS))
+        self.x = random.randint(BALL_R, WIDTH - BALL_R)
+        self.y = -BALL_R
+        self.r = 1  # Начинаем с маленького размера для анимации
+        self.target_r = BALL_R
+        self.color = random.choice([RED, BLUE, GREEN])
+        self.speed = BALL_SPEED
+        self.rect = pygame.Rect(self.x - self.r, self.y - self.r, self.r * 2, self.r * 2)
+        self.grow_speed = 0.5  # Скорость роста при появлении
+
+    def move(self):
+        """Движение шарика вниз и анимация появления"""
+        self.y += self.speed
         
+        # Анимация роста
+        if self.r < self.target_r:
+            self.r += self.grow_speed
+            if self.r > self.target_r:
+                self.r = self.target_r
+                
+        self.rect = pygame.Rect(self.x - self.r, self.y - self.r, self.r * 2, self.r * 2)
+
     def draw(self, screen):
-        """Отрисовывает шарик на экране"""
-        pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+        """Отрисовка шарика"""
+        pygame.draw.circle(screen, self.color, (self.x, self.y), int(self.r))
 
-
-class Rock(FallingObject):
-    """Класс камня"""
+class Rock:
+    """Класс препятствия (камня)"""
     def __init__(self):
-        super().__init__(ROCK_R, ROCK_SPEED, ROCK_COLOR)
+        self.x = random.randint(ROCK_R, WIDTH - ROCK_R)
+        self.y = -ROCK_R
+        self.r = 1  # Начинаем с маленького размера для анимации
+        self.target_r = ROCK_R
+        self.color = GRAY
+        self.speed = ROCK_SPEED
+        self.rect = pygame.Rect(self.x - self.r, self.y - self.r, self.r*2, self.r*2)
+        self.grow_speed = 0.7  # Скорость роста при появлении
+
+    def move(self):
+        """Движение камня вниз и анимация появления"""
+        self.y += self.speed
         
+        # Анимация роста
+        if self.r < self.target_r:
+            self.r += self.grow_speed
+            if self.r > self.target_r:
+                self.r = self.target_r
+                
+        self.rect = pygame.Rect(self.x - self.r, self.y - self.r, self.r*2, self.r*2)
+
     def draw(self, screen):
-        """Отрисовывает камень на экране"""
-        pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+        """Отрисовка камня"""
+        pygame.draw.circle(screen, self.color, (self.x, self.y), int(self.r))
