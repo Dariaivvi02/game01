@@ -97,4 +97,21 @@ class GameView:
             ball.draw(self.screen)
         for rock in rocks:
             rock.draw(self.screen)
+        
+        # ОТСУТСТВОВАЛА ЭТА СТРОКА - отображение HUD
+        self.draw_hud(score, lives)
 
+    def draw_pause(self):
+        """Отображает экран паузы"""
+        # Полупрозрачное затемнение
+        s = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        s.fill((0, 0, 0, 128))  # Черный с прозрачностью 50%
+        self.screen.blit(s, (0, 0))
+        
+        # Текст паузы
+        pause_text = self.font.render("PAUSED", True, YELLOW)
+        self.screen.blit(pause_text, (WIDTH//2 - pause_text.get_width()//2, HEIGHT//2 - pause_text.get_height()//2))
+        
+        # Инструкция
+        instruction = self.small_font.render("Press P to continue", True, WHITE)
+        self.screen.blit(instruction, (WIDTH//2 - instruction.get_width()//2, HEIGHT//2 + 50))
