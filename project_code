@@ -183,7 +183,7 @@ class GameModel:
         return None
 
     def update(self, direction):
-        """Обновление состояния игры"""
+        """абстактное обновление состояния игры"""
         if self.state != "playing" or self.paused:
             return None
             
