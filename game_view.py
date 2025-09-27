@@ -98,7 +98,7 @@ class GameView:
         for rock in rocks:
             rock.draw(self.screen)
         
-        # ОТСУТСТВОВАЛА ЭТА СТРОКА - отображение HUD
+        # ДОБАВЛЕНО: отображение HUD (очков и жизней)
         self.draw_hud(score, lives)
 
     def draw_pause(self):
